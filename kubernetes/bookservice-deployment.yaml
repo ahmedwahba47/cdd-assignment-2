@@ -24,7 +24,7 @@ spec:
     spec:
       containers:
         - name: bookservice
-          image: bookservice:1.0.1
+          image: bookservice:1.0.0
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8080
@@ -60,6 +60,11 @@ spec:
                 configMapKeyRef:
                   name: bookservice-config
                   key: DEPLOYMENT_TYPE
+            - name: APP_VERSION
+              valueFrom:
+                configMapKeyRef:
+                  name: bookservice-config
+                  key: APP_VERSION
           resources:
             requests:
               memory: "256Mi"

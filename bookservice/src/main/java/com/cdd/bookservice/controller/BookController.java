@@ -25,6 +25,9 @@ public class BookController {
     @org.springframework.beans.factory.annotation.Value("${DEPLOYMENT_TYPE:unknown}")
     private String deploymentType;
 
+    @org.springframework.beans.factory.annotation.Value("${APP_VERSION:1.0.0}")
+    private String appVersion;
+
     public BookController(BookService bookService) {
         this.bookService = bookService;
     }
@@ -35,6 +38,7 @@ public class BookController {
         List<Book> books = bookService.getAllBooks();
         Map<String, Object> response = new HashMap<>();
         response.put("deployment", deploymentType);
+        response.put("version", appVersion);
         response.put("books", books);
         return ResponseEntity.ok(response);
     }
@@ -110,7 +114,7 @@ public class BookController {
         Map<String, String> response = new HashMap<>();
         response.put("status", "UP");
         response.put("service", "bookservice");
-        response.put("version", "1.0.0");
+        response.put("version", appVersion);
         return ResponseEntity.ok(response);
     }
 }

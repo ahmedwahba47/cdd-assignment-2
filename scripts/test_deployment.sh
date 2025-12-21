@@ -203,9 +203,45 @@ else
     fail "DEPLOYMENT_TYPE missing in kubernetes configmap"
 fi
 
-# Test 12: Live Deployment Type Verification (if services are running)
+# Test 12: APP_VERSION Configuration
 echo ""
-echo "--- Test 12: Live Deployment Type Verification ---"
+echo "--- Test 12: APP_VERSION Configuration ---"
+
+# Check APP_VERSION is set in all config files
+if grep -q 'APP_VERSION.*1.0.0' "$PROJECT_ROOT/docker-compose/docker-compose.yml"; then
+    pass "APP_VERSION set in docker-compose.yml"
+else
+    fail "APP_VERSION missing in docker-compose.yml"
+fi
+
+if grep -q 'APP_VERSION.*1.0.0' "$PROJECT_ROOT/docker-swarm/docker-stack.yml"; then
+    pass "APP_VERSION set in docker-stack.yml"
+else
+    fail "APP_VERSION missing in docker-stack.yml"
+fi
+
+if grep -q 'APP_VERSION.*1.0.0' "$PROJECT_ROOT/kubernetes/bookservice-configmap.yaml"; then
+    pass "APP_VERSION set in kubernetes configmap"
+else
+    fail "APP_VERSION missing in kubernetes configmap"
+fi
+
+# Check upgrade files exist
+if [ -f "$PROJECT_ROOT/docker-swarm/docker-stack-v1.0.1.yml" ]; then
+    pass "Swarm upgrade file (v1.0.1) exists"
+else
+    fail "Swarm upgrade file missing"
+fi
+
+if [ -f "$PROJECT_ROOT/kubernetes/bookservice-configmap-v1.0.1.yaml" ]; then
+    pass "K8s upgrade configmap (v1.0.1) exists"
+else
+    fail "K8s upgrade configmap missing"
+fi
+
+# Test 13: Live Deployment Type Verification (if services are running)
+echo ""
+echo "--- Test 13: Live Deployment Type Verification ---"
 
 PUBLIC_IP="128.140.102.126"
 
@@ -213,6 +249,13 @@ PUBLIC_IP="128.140.102.126"
 COMPOSE_RESPONSE=$(curl -s "http://${PUBLIC_IP}:8080/api/books" 2>/dev/null || echo "")
 if [[ "$COMPOSE_RESPONSE" == *'"deployment":"docker-compose"'* ]]; then
     pass "Docker Compose returns deployment: docker-compose"
+    # Check version
+    if [[ "$COMPOSE_RESPONSE" == *'"version":"1.0.'* ]]; then
+        VERSION=$(echo "$COMPOSE_RESPONSE" | grep -o '"version":"[^"]*"' | cut -d'"' -f4)
+        pass "Docker Compose returns version: $VERSION"
+    else
+        warn "Docker Compose version field not found"
+    fi
 elif [[ "$COMPOSE_RESPONSE" == *'"deployment"'* ]]; then
     DEPLOY_TYPE=$(echo "$COMPOSE_RESPONSE" | grep -o '"deployment":"[^"]*"' | cut -d'"' -f4)
     fail "Docker Compose returns wrong deployment type: $DEPLOY_TYPE (expected: docker-compose)"
@@ -226,6 +269,13 @@ fi
 SWARM_RESPONSE=$(curl -s "http://${PUBLIC_IP}:8081/api/books" 2>/dev/null || echo "")
 if [[ "$SWARM_RESPONSE" == *'"deployment":"docker-swarm"'* ]]; then
     pass "Docker Swarm returns deployment: docker-swarm"
+    # Check version
+    if [[ "$SWARM_RESPONSE" == *'"version":"1.0.'* ]]; then
+        VERSION=$(echo "$SWARM_RESPONSE" | grep -o '"version":"[^"]*"' | cut -d'"' -f4)
+        pass "Docker Swarm returns version: $VERSION"
+    else
+        warn "Docker Swarm version field not found"
+    fi
 elif [[ "$SWARM_RESPONSE" == *'"deployment"'* ]]; then
     DEPLOY_TYPE=$(echo "$SWARM_RESPONSE" | grep -o '"deployment":"[^"]*"' | cut -d'"' -f4)
     fail "Docker Swarm returns wrong deployment type: $DEPLOY_TYPE (expected: docker-swarm)"
@@ -239,6 +289,13 @@ fi
 K8S_RESPONSE=$(curl -s "http://${PUBLIC_IP}:30080/api/books" 2>/dev/null || echo "")
 if [[ "$K8S_RESPONSE" == *'"deployment":"kubernetes"'* ]]; then
     pass "Kubernetes returns deployment: kubernetes"
+    # Check version
+    if [[ "$K8S_RESPONSE" == *'"version":"1.0.'* ]]; then
+        VERSION=$(echo "$K8S_RESPONSE" | grep -o '"version":"[^"]*"' | cut -d'"' -f4)
+        pass "Kubernetes returns version: $VERSION"
+    else
+        warn "Kubernetes version field not found"
+    fi
 elif [[ "$K8S_RESPONSE" == *'"deployment"'* ]]; then
     DEPLOY_TYPE=$(echo "$K8S_RESPONSE" | grep -o '"deployment":"[^"]*"' | cut -d'"' -f4)
     fail "Kubernetes returns wrong deployment type: $DEPLOY_TYPE (expected: kubernetes)"

@@ -39,6 +39,7 @@ services:
       MYSQL_USER: bookuser
       MYSQL_PASSWORD: bookpass
       DEPLOYMENT_TYPE: docker-compose
+      APP_VERSION: "1.0.0"
     ports:
       - "8080:8080"
     volumes:
