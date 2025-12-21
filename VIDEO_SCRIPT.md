@@ -1,6 +1,8 @@
 # Video Script - CDD Project #2
 ## Ahmed Wahba (A00336722)
 
+**GitHub Repository:** https://github.com/ahmedwahba47/cdd-assignment-2
+
 ---
 
 ## DEMO LINKS (Use These During Recording)

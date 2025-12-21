@@ -1047,6 +1047,12 @@ The choice of orchestration tool should be driven by team expertise, scale requi
 
 ---
 
+**GitHub Repository:**
+
+https://github.com/ahmedwahba47/cdd-assignment-2
+
+---
+
 **AI Assistance Acknowledgment:**
 
 Claude (Anthropic, 2025). Assistance with Docker Compose configuration structure, Kubernetes manifest templates, Helm chart scaffolding, and ELK stack Logstash grok patterns.
