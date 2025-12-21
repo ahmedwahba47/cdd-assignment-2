@@ -178,6 +178,76 @@ else
     fail "Helm templates directory missing"
 fi
 
+# Test 11: Deployment Type Environment Variable
+echo ""
+echo "--- Test 11: Deployment Type Configuration ---"
+
+# Check DEPLOYMENT_TYPE is set in docker-compose.yml
+if grep -q "DEPLOYMENT_TYPE: docker-compose" "$PROJECT_ROOT/docker-compose/docker-compose.yml"; then
+    pass "DEPLOYMENT_TYPE set in docker-compose.yml"
+else
+    fail "DEPLOYMENT_TYPE missing in docker-compose.yml"
+fi
+
+# Check DEPLOYMENT_TYPE is set in docker-stack.yml
+if grep -q "DEPLOYMENT_TYPE: docker-swarm" "$PROJECT_ROOT/docker-swarm/docker-stack.yml"; then
+    pass "DEPLOYMENT_TYPE set in docker-stack.yml"
+else
+    fail "DEPLOYMENT_TYPE missing in docker-stack.yml"
+fi
+
+# Check DEPLOYMENT_TYPE is set in kubernetes configmap
+if grep -q 'DEPLOYMENT_TYPE.*kubernetes' "$PROJECT_ROOT/kubernetes/bookservice-configmap.yaml"; then
+    pass "DEPLOYMENT_TYPE set in kubernetes configmap"
+else
+    fail "DEPLOYMENT_TYPE missing in kubernetes configmap"
+fi
+
+# Test 12: Live Deployment Type Verification (if services are running)
+echo ""
+echo "--- Test 12: Live Deployment Type Verification ---"
+
+PUBLIC_IP="128.140.102.126"
+
+# Test Docker Compose (port 8080)
+COMPOSE_RESPONSE=$(curl -s "http://${PUBLIC_IP}:8080/api/books" 2>/dev/null || echo "")
+if [[ "$COMPOSE_RESPONSE" == *'"deployment":"docker-compose"'* ]]; then
+    pass "Docker Compose returns deployment: docker-compose"
+elif [[ "$COMPOSE_RESPONSE" == *'"deployment"'* ]]; then
+    DEPLOY_TYPE=$(echo "$COMPOSE_RESPONSE" | grep -o '"deployment":"[^"]*"' | cut -d'"' -f4)
+    fail "Docker Compose returns wrong deployment type: $DEPLOY_TYPE (expected: docker-compose)"
+elif [ -z "$COMPOSE_RESPONSE" ]; then
+    warn "Docker Compose not running on port 8080 (skipped)"
+else
+    warn "Could not parse Docker Compose response"
+fi
+
+# Test Docker Swarm (port 8081)
+SWARM_RESPONSE=$(curl -s "http://${PUBLIC_IP}:8081/api/books" 2>/dev/null || echo "")
+if [[ "$SWARM_RESPONSE" == *'"deployment":"docker-swarm"'* ]]; then
+    pass "Docker Swarm returns deployment: docker-swarm"
+elif [[ "$SWARM_RESPONSE" == *'"deployment"'* ]]; then
+    DEPLOY_TYPE=$(echo "$SWARM_RESPONSE" | grep -o '"deployment":"[^"]*"' | cut -d'"' -f4)
+    fail "Docker Swarm returns wrong deployment type: $DEPLOY_TYPE (expected: docker-swarm)"
+elif [ -z "$SWARM_RESPONSE" ]; then
+    warn "Docker Swarm not running on port 8081 (skipped)"
+else
+    warn "Could not parse Docker Swarm response"
+fi
+
+# Test Kubernetes (port 30080)
+K8S_RESPONSE=$(curl -s "http://${PUBLIC_IP}:30080/api/books" 2>/dev/null || echo "")
+if [[ "$K8S_RESPONSE" == *'"deployment":"kubernetes"'* ]]; then
+    pass "Kubernetes returns deployment: kubernetes"
+elif [[ "$K8S_RESPONSE" == *'"deployment"'* ]]; then
+    DEPLOY_TYPE=$(echo "$K8S_RESPONSE" | grep -o '"deployment":"[^"]*"' | cut -d'"' -f4)
+    fail "Kubernetes returns wrong deployment type: $DEPLOY_TYPE (expected: kubernetes)"
+elif [ -z "$K8S_RESPONSE" ]; then
+    warn "Kubernetes not running on port 30080 (skipped)"
+else
+    warn "Could not parse Kubernetes response"
+fi
+
 # Summary
 echo ""
 echo "=========================================="
