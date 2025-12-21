@@ -541,7 +541,7 @@ def build_cover_page(styles):
         ['Submission Date:', 'December 2025'],
     ]
     if GIT_REPO_URL:
-        info_data.append(['Repository:', GIT_REPO_URL])
+        info_data.append(['Repository:', Paragraph(f'<a href="{GIT_REPO_URL}" color="blue">{GIT_REPO_URL}</a>', styles['ReportBody'])])
 
     info_table = Table(info_data, colWidths=[1.6*inch, 3.2*inch])
     info_table.setStyle(TableStyle([
