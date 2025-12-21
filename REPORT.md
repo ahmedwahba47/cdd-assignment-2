@@ -6,6 +6,7 @@
 **Assignment:** Project #2 2025/26 – Springboard
 **Student:** Ahmed Wahba
 **Date:** January 2026
+**GitHub Repository:** https://github.com/ahmedwahba47/cdd-assignment-2
 
 ---
 
@@ -1044,12 +1045,6 @@ The choice of orchestration tool should be driven by team expertise, scale requi
 6. Poulton, N. (2023). *Docker Deep Dive*. Nigel Poulton.
 7. Luksa, M. (2018). *Kubernetes in Action*. Manning Publications.
 8. Burns, B., Beda, J., & Hightower, K. (2019). *Kubernetes: Up and Running*. O'Reilly Media.
-
----
-
-**GitHub Repository:**
-
-https://github.com/ahmedwahba47/cdd-assignment-2
 
 ---
 
