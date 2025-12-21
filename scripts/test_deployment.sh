@@ -239,9 +239,49 @@ else
     fail "K8s upgrade configmap missing"
 fi
 
-# Test 13: Live Deployment Type Verification (if services are running)
+# Test 13: Docker Images
 echo ""
-echo "--- Test 13: Live Deployment Type Verification ---"
+echo "--- Test 13: Docker Images ---"
+
+# Check if bookservice images exist
+if docker image inspect bookservice:1.0.0 &>/dev/null; then
+    pass "bookservice:1.0.0 image exists"
+else
+    warn "bookservice:1.0.0 image not found (build with: cd bookservice && docker build -t bookservice:1.0.0 .)"
+fi
+
+if docker image inspect bookservice:1.0.1 &>/dev/null; then
+    pass "bookservice:1.0.1 image exists"
+else
+    warn "bookservice:1.0.1 image not found (create with: docker tag bookservice:1.0.0 bookservice:1.0.1)"
+fi
+
+# Test 14: ELK Stack Files
+echo ""
+echo "--- Test 14: ELK Stack Files ---"
+
+if [ -f "$PROJECT_ROOT/elk/logstash/logstash.conf" ]; then
+    pass "Logstash config exists"
+else
+    fail "Logstash config missing"
+fi
+
+if [ -d "$PROJECT_ROOT/elk/logstash" ]; then
+    pass "ELK logstash directory exists"
+else
+    fail "ELK logstash directory missing"
+fi
+
+# Validate ELK compose file
+if python3 -c "import yaml; yaml.safe_load(open('$PROJECT_ROOT/docker-compose/docker-compose-elk.yml'))" 2>/dev/null; then
+    pass "docker-compose-elk.yml is valid YAML"
+else
+    fail "docker-compose-elk.yml has invalid YAML syntax"
+fi
+
+# Test 15: Live Deployment Type Verification (if services are running)
+echo ""
+echo "--- Test 15: Live Deployment Type Verification ---"
 
 PUBLIC_IP="128.140.102.126"
 
