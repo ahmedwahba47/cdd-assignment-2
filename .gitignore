@@ -46,3 +46,10 @@ Assignment_2_25_PT.pdf
 # Python cache
 __pycache__/
 *.pyc
+
+# Personal notes/scripts (not for repo)
+PROJECT_TRACKER.md
+DEMO_CHEAT_SHEET.md
+VIDEO_SCRIPT.md
+REPORT.md
+report/generate_report.py
