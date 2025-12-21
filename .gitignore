@@ -1,0 +1,48 @@
+# Maven
+target/
+*.jar
+*.class
+
+# IDE
+.idea/
+*.iml
+.vscode/
+*.swp
+.claude/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docker
+*.tar
+
+# Logs
+logs/
+*.log
+
+# Environment
+.env
+.env.local
+
+# Helm dependencies
+helm/bookservice-chart/charts/
+helm/bookservice-chart/Chart.lock
+
+# Temporary files
+tmp/
+temp/
+/tmp/
+
+# Assignment PDF (original, not needed in repo)
+Assignment_2_25_PT.pdf
+
+# GitHub workflow artifacts
+.github/
+
+# Port forward logs
+/tmp/k8s-pf.log
+
+# Python cache
+__pycache__/
+*.pyc

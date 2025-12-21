@@ -1,0 +1,193 @@
+{
+  "info": {
+    "name": "BookService API",
+    "description": "Collection for testing Book Management Microservice",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Health Check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/api/books/health",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["api", "books", "health"]
+        }
+      }
+    },
+    {
+      "name": "Get All Books",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/api/books",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["api", "books"]
+        }
+      }
+    },
+    {
+      "name": "Get Book by ID",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/api/books/1",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["api", "books", "1"]
+        }
+      }
+    },
+    {
+      "name": "Get Book by ISBN",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/api/books/isbn/978-0132350884",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["api", "books", "isbn", "978-0132350884"]
+        }
+      }
+    },
+    {
+      "name": "Search by Author",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/api/books/search/author?q=Robert",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["api", "books", "search", "author"],
+          "query": [
+            {
+              "key": "q",
+              "value": "Robert"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Search by Title",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/api/books/search/title?q=Docker",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["api", "books", "search", "title"],
+          "query": [
+            {
+              "key": "q",
+              "value": "Docker"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Get Book Count",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/api/books/count",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["api", "books", "count"]
+        }
+      }
+    },
+    {
+      "name": "Create Book",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"title\": \"Microservices Patterns\",\n    \"author\": \"Chris Richardson\",\n    \"isbn\": \"978-1617294549\",\n    \"price\": 54.99,\n    \"description\": \"With examples in Java\",\n    \"publishedYear\": 2018,\n    \"quantity\": 20\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8080/api/books",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["api", "books"]
+        }
+      }
+    },
+    {
+      "name": "Update Book",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"title\": \"Clean Code - Updated\",\n    \"author\": \"Robert C. Martin\",\n    \"isbn\": \"978-0132350884\",\n    \"price\": 39.99,\n    \"description\": \"A Handbook of Agile Software Craftsmanship - Updated Edition\",\n    \"publishedYear\": 2008,\n    \"quantity\": 100\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8080/api/books/1",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["api", "books", "1"]
+        }
+      }
+    },
+    {
+      "name": "Delete Book",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/api/books/6",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["api", "books", "6"]
+        }
+      }
+    },
+    {
+      "name": "Actuator Health",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/actuator/health",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["actuator", "health"]
+        }
+      }
+    }
+  ]
+}

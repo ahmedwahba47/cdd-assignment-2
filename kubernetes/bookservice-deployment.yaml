@@ -1,0 +1,92 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bookservice
+  namespace: bookservice
+  labels:
+    app: bookservice
+    version: v1
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: bookservice
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+  template:
+    metadata:
+      labels:
+        app: bookservice
+        version: v1
+    spec:
+      containers:
+        - name: bookservice
+          image: bookservice:1.0.1
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+              name: http
+          env:
+            - name: MYSQL_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: bookservice-config
+                  key: MYSQL_HOST
+            - name: MYSQL_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: bookservice-config
+                  key: MYSQL_PORT
+            - name: MYSQL_DATABASE
+              valueFrom:
+                configMapKeyRef:
+                  name: bookservice-config
+                  key: MYSQL_DATABASE
+            - name: MYSQL_USER
+              valueFrom:
+                configMapKeyRef:
+                  name: bookservice-config
+                  key: MYSQL_USER
+            - name: MYSQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-secret
+                  key: mysql-password
+            - name: DEPLOYMENT_TYPE
+              valueFrom:
+                configMapKeyRef:
+                  name: bookservice-config
+                  key: DEPLOYMENT_TYPE
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "250m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+          livenessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8080
+            initialDelaySeconds: 60
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8080
+            initialDelaySeconds: 30
+            periodSeconds: 5
+            timeoutSeconds: 3
+            successThreshold: 1
+            failureThreshold: 3
+          volumeMounts:
+            - name: logs
+              mountPath: /app/logs
+      volumes:
+        - name: logs
+          emptyDir: {}

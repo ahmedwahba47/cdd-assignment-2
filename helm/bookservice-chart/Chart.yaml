@@ -1,0 +1,22 @@
+apiVersion: v2
+name: bookservice-chart
+description: A Helm chart for deploying Book Management Microservice
+type: application
+version: 1.0.0
+appVersion: "1.0.0"
+
+keywords:
+  - bookservice
+  - microservice
+  - spring-boot
+  - mysql
+
+maintainers:
+  - name: CDD Assignment
+    email: student@example.com
+
+dependencies:
+  - name: mysql
+    version: "9.14.1"
+    repository: "https://charts.bitnami.com/bitnami"
+    condition: mysql.enabled

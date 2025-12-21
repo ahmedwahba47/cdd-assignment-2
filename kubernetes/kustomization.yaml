@@ -1,0 +1,20 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: bookservice
+
+resources:
+  - namespace.yaml
+  - mysql-secret.yaml
+  - mysql-configmap.yaml
+  - mysql-pvc.yaml
+  - mysql-deployment.yaml
+  - mysql-service.yaml
+  - bookservice-configmap.yaml
+  - bookservice-deployment.yaml
+  - bookservice-service.yaml
+  - bookservice-hpa.yaml
+
+commonLabels:
+  project: cdd-assignment
+  environment: development

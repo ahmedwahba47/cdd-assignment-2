@@ -1,0 +1,196 @@
+#!/bin/bash
+# Test script for Container Design & Deployment Project #2
+# Student: Ahmed Wahba (A00336722)
+
+set -e
+
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+NC='\033[0m' # No Color
+
+PROJECT_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+
+echo "=========================================="
+echo "CDD Project #2 - Deployment Test Suite"
+echo "=========================================="
+echo ""
+
+TESTS_PASSED=0
+TESTS_FAILED=0
+
+pass() {
+    echo -e "${GREEN}[PASS]${NC} $1"
+    ((TESTS_PASSED++)) || true
+}
+
+fail() {
+    echo -e "${RED}[FAIL]${NC} $1"
+    ((TESTS_FAILED++)) || true
+}
+
+warn() {
+    echo -e "${YELLOW}[WARN]${NC} $1"
+}
+
+info() {
+    echo -e "[INFO] $1"
+}
+
+# Test 1: Check required files exist
+echo "--- Test 1: Required Files ---"
+FILES=(
+    "bookservice/Dockerfile"
+    "bookservice/pom.xml"
+    "docker-compose/docker-compose.yml"
+    "docker-compose/docker-compose-elk.yml"
+    "docker-swarm/docker-stack.yml"
+    "kubernetes/bookservice-deployment.yaml"
+    "helm/bookservice-chart/Chart.yaml"
+)
+
+for file in "${FILES[@]}"; do
+    if [ -f "$PROJECT_ROOT/$file" ]; then
+        pass "$file exists"
+    else
+        fail "$file missing"
+    fi
+done
+
+# Test 2: Check Java version in pom.xml
+echo ""
+echo "--- Test 2: Java Version ---"
+JAVA_VERSION=$(grep -o '<java.version>[0-9]*</java.version>' "$PROJECT_ROOT/bookservice/pom.xml" | grep -o '[0-9]*')
+if [ "$JAVA_VERSION" = "25" ]; then
+    pass "Java version is 25 (LTS)"
+else
+    fail "Java version is $JAVA_VERSION (expected 25)"
+fi
+
+# Test 3: Check MySQL version in compose files
+echo ""
+echo "--- Test 3: MySQL Version ---"
+MYSQL_VERSION=$(grep 'image: mysql:' "$PROJECT_ROOT/docker-compose/docker-compose.yml" | grep -o 'mysql:[0-9.]*' | head -1)
+if [[ "$MYSQL_VERSION" == "mysql:8.4" ]]; then
+    pass "MySQL version is 8.4 (LTS)"
+else
+    warn "MySQL version is $MYSQL_VERSION (recommended: 8.4)"
+fi
+
+# Test 4: Check ELK versions
+echo ""
+echo "--- Test 4: ELK Stack Versions ---"
+ELK_VERSION=$(grep 'image: elasticsearch:' "$PROJECT_ROOT/docker-compose/docker-compose-elk.yml" | grep -o 'elasticsearch:[0-9.]*' | head -1)
+if [[ "$ELK_VERSION" == *"9.2"* ]] || [[ "$ELK_VERSION" == *"9."* ]]; then
+    pass "Elasticsearch version: $ELK_VERSION"
+else
+    warn "Elasticsearch version: $ELK_VERSION (consider updating to 9.x)"
+fi
+
+# Test 5: Check Dockerfile uses Java 25
+echo ""
+echo "--- Test 5: Dockerfile Java Version ---"
+if grep -q "eclipse-temurin:25" "$PROJECT_ROOT/bookservice/Dockerfile"; then
+    pass "Dockerfile uses Java 25"
+else
+    fail "Dockerfile not using Java 25"
+fi
+
+# Test 6: Check multi-stage build
+echo ""
+echo "--- Test 6: Dockerfile Best Practices ---"
+if grep -q "AS builder" "$PROJECT_ROOT/bookservice/Dockerfile"; then
+    pass "Multi-stage build configured"
+else
+    fail "Multi-stage build not found"
+fi
+
+if grep -q "USER appuser" "$PROJECT_ROOT/bookservice/Dockerfile"; then
+    pass "Non-root user configured"
+else
+    warn "Consider adding non-root user"
+fi
+
+if grep -q "HEALTHCHECK" "$PROJECT_ROOT/bookservice/Dockerfile"; then
+    pass "Health check configured"
+else
+    warn "Consider adding health check"
+fi
+
+# Test 7: Validate YAML syntax
+echo ""
+echo "--- Test 7: YAML Syntax Validation ---"
+if command -v python3 &> /dev/null; then
+    for yaml in docker-compose/docker-compose.yml docker-swarm/docker-stack.yml; do
+        if python3 -c "import yaml; yaml.safe_load(open('$PROJECT_ROOT/$yaml'))" 2>/dev/null; then
+            pass "$yaml is valid YAML"
+        else
+            fail "$yaml has invalid YAML syntax"
+        fi
+    done
+else
+    warn "Python3 not available for YAML validation"
+fi
+
+# Test 8: Check report generator
+echo ""
+echo "--- Test 8: Report Generator ---"
+if [ -f "$PROJECT_ROOT/report/generate_report.py" ]; then
+    pass "Report generator exists"
+    if python3 -c "from reportlab.lib import colors" 2>/dev/null; then
+        pass "reportlab library installed"
+    else
+        warn "reportlab not installed (run: pip install reportlab)"
+    fi
+else
+    fail "Report generator missing"
+fi
+
+# Test 9: Check Kubernetes manifests
+echo ""
+echo "--- Test 9: Kubernetes Manifests ---"
+K8S_FILES=(
+    "namespace.yaml"
+    "mysql-deployment.yaml"
+    "bookservice-deployment.yaml"
+    "bookservice-service.yaml"
+)
+for file in "${K8S_FILES[@]}"; do
+    if [ -f "$PROJECT_ROOT/kubernetes/$file" ]; then
+        pass "kubernetes/$file exists"
+    else
+        fail "kubernetes/$file missing"
+    fi
+done
+
+# Test 10: Check Helm chart
+echo ""
+echo "--- Test 10: Helm Chart ---"
+if [ -f "$PROJECT_ROOT/helm/bookservice-chart/Chart.yaml" ]; then
+    pass "Helm Chart.yaml exists"
+fi
+if [ -f "$PROJECT_ROOT/helm/bookservice-chart/values.yaml" ]; then
+    pass "Helm values.yaml exists"
+fi
+if [ -d "$PROJECT_ROOT/helm/bookservice-chart/templates" ]; then
+    pass "Helm templates directory exists"
+else
+    fail "Helm templates directory missing"
+fi
+
+# Summary
+echo ""
+echo "=========================================="
+echo "Test Summary"
+echo "=========================================="
+echo -e "${GREEN}Passed:${NC} $TESTS_PASSED"
+echo -e "${RED}Failed:${NC} $TESTS_FAILED"
+echo ""
+
+if [ $TESTS_FAILED -eq 0 ]; then
+    echo -e "${GREEN}All tests passed! Ready for deployment testing.${NC}"
+    exit 0
+else
+    echo -e "${RED}Some tests failed. Please fix before submission.${NC}"
+    exit 1
+fi

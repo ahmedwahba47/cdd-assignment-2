@@ -1,0 +1,114 @@
+# Default values for bookservice-chart
+
+# Number of replicas
+replicaCount: 3
+
+# Application image configuration
+image:
+  repository: yourusername/bookservice
+  tag: "1.0.0"
+  pullPolicy: IfNotPresent
+
+# Image pull secrets (if using private registry)
+imagePullSecrets: []
+
+# Service account configuration
+serviceAccount:
+  create: true
+  annotations: {}
+  name: ""
+
+# Pod annotations
+podAnnotations: {}
+
+# Pod security context
+podSecurityContext: {}
+
+# Container security context
+securityContext: {}
+
+# Service configuration
+service:
+  type: NodePort
+  port: 8080
+  nodePort: 30080
+
+# Ingress configuration
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+  hosts:
+    - host: bookservice.local
+      paths:
+        - path: /
+          pathType: Prefix
+  tls: []
+
+# Resource limits and requests
+resources:
+  limits:
+    cpu: 500m
+    memory: 512Mi
+  requests:
+    cpu: 250m
+    memory: 256Mi
+
+# Autoscaling configuration
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 70
+  targetMemoryUtilizationPercentage: 80
+
+# Node selector
+nodeSelector: {}
+
+# Tolerations
+tolerations: []
+
+# Affinity
+affinity: {}
+
+# Liveness probe configuration
+livenessProbe:
+  httpGet:
+    path: /actuator/health
+    port: 8080
+  initialDelaySeconds: 60
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 3
+
+# Readiness probe configuration
+readinessProbe:
+  httpGet:
+    path: /actuator/health
+    port: 8080
+  initialDelaySeconds: 30
+  periodSeconds: 5
+  timeoutSeconds: 3
+  successThreshold: 1
+  failureThreshold: 3
+
+# Application configuration
+config:
+  mysql:
+    host: "bookservice-chart-mysql"
+    port: "3306"
+    database: "bookdb"
+    user: "bookuser"
+
+# MySQL dependency configuration
+mysql:
+  enabled: true
+  auth:
+    rootPassword: "rootpassword"
+    database: "bookdb"
+    username: "bookuser"
+    password: "bookpass"
+  primary:
+    persistence:
+      enabled: true
+      size: 1Gi
