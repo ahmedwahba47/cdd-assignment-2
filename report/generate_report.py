@@ -28,7 +28,7 @@ STUDENT_NAME = "Ahmed Wahba"
 STUDENT_ID = "A00336722"
 ASSIGNMENT_NAME = "Container Design & Deployment Project #2 2025/26"
 OUTPUT_FILE = "AhmedWahba_A00336722_CDD_Project2.pdf"
-GIT_REPO_URL = ""  # Set when repo is created
+GIT_REPO_URL = "https://github.com/ahmedwahba47/cdd-assignment-2"
 
 # Colors
 HEADER_BLUE = colors.HexColor('#2C3E50')
