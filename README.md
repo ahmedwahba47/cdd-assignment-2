@@ -48,10 +48,12 @@ cdd2/
 ## Prerequisites
 
 - Docker & Docker Compose
-- Kubernetes (Minikube recommended)
+- Kubernetes (k3s - lightweight Kubernetes distribution)
 - Helm 3
 - Java 25 (for local development)
 - Maven (for local development)
+
+> **Note:** This project uses k3s instead of Minikube. Minikube was causing system freezes on VPS environments due to disk I/O issues ([GitHub #11124](https://github.com/kubernetes/minikube/issues/11124)). k3s runs natively without virtualisation overhead.
 
 ## Quick Start
 
@@ -78,12 +80,16 @@ docker stack deploy -c docker-swarm/docker-stack.yml bookstack
 # Access: http://localhost:8081/api/books
 ```
 
-### Kubernetes (Port 30080)
+### Kubernetes with k3s (Port 30080)
 
 ```bash
-# Start minikube and load image
-minikube start --driver=docker
-minikube image load bookservice:1.0.0
+# Install k3s (one-time setup)
+curl -sfL https://get.k3s.io | sh -
+
+# Configure kubectl
+mkdir -p ~/.kube
+sudo cp /etc/rancher/k3s/k3s.yaml ~/.kube/config
+sudo chown $(id -u):$(id -g) ~/.kube/config
 
 # Apply all manifests
 kubectl apply -f kubernetes/namespace.yaml
@@ -96,8 +102,7 @@ kubectl apply -f kubernetes/bookservice-configmap.yaml
 kubectl apply -f kubernetes/bookservice-deployment.yaml
 kubectl apply -f kubernetes/bookservice-service.yaml
 
-# Port forward for access
-kubectl port-forward -n bookservice service/bookservice 30080:8080 --address 0.0.0.0 &
+# Access directly via NodePort (no port-forward needed with k3s)
 # Access: http://localhost:30080/api/books
 ```
 
@@ -168,11 +173,14 @@ docker compose -f docker-compose/docker-compose.yml down -v
 docker stack rm bookstack
 docker swarm leave --force
 
-# Kubernetes
+# Kubernetes (k3s)
 kubectl delete namespace bookservice
 
 # Helm
 helm uninstall bookservice -n bookservice
+
+# Uninstall k3s completely (if needed)
+/usr/local/bin/k3s-uninstall.sh
 ```
 
 ## Generate PDF Report

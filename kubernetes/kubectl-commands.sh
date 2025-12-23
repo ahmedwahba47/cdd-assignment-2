@@ -1,9 +1,19 @@
 #!/bin/bash
 
 # ============================================
-# Kubernetes Commands Reference
+# Kubernetes Commands Reference (k3s)
 # Book Service Deployment
 # ============================================
+#
+# NOTE: This project uses k3s instead of minikube.
+# k3s is a lightweight, production-ready Kubernetes distribution.
+#
+# Install k3s: curl -sfL https://get.k3s.io | sh -
+# Configure kubectl:
+#   mkdir -p ~/.kube
+#   sudo cp /etc/rancher/k3s/k3s.yaml ~/.kube/config
+#   sudo chown $(id -u):$(id -g) ~/.kube/config
+#
 
 # Colors for output
 RED='\033[0;31m'

@@ -163,6 +163,20 @@ for file in "${K8S_FILES[@]}"; do
     fi
 done
 
+# Test 9b: Check k3s installation
+echo ""
+echo "--- Test 9b: k3s Installation ---"
+if command -v k3s &> /dev/null || [ -f "/usr/local/bin/k3s" ]; then
+    pass "k3s is installed"
+    if systemctl is-active --quiet k3s 2>/dev/null; then
+        pass "k3s service is running"
+    else
+        warn "k3s service not running (start with: sudo systemctl start k3s)"
+    fi
+else
+    warn "k3s not installed (install with: curl -sfL https://get.k3s.io | sh -)"
+fi
+
 # Test 10: Check Helm chart
 echo ""
 echo "--- Test 10: Helm Chart ---"

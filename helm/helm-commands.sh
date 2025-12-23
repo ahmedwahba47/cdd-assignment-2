@@ -1,9 +1,13 @@
 #!/bin/bash
 
 # ============================================
-# Helm Commands Reference
+# Helm Commands Reference (k3s)
 # Book Service Deployment
 # ============================================
+#
+# NOTE: This project uses k3s instead of minikube.
+# Helm works the same way with k3s - just ensure kubectl is configured.
+#
 
 # Colors for output
 RED='\033[0;31m'
