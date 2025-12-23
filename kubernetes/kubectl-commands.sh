@@ -63,8 +63,11 @@ echo "kubectl scale deployment bookservice -n bookservice --replicas=2"
 # 4. ROLLING UPDATE
 # -------------------------------------------
 echo -e "\n${YELLOW}4. Perform rolling update:${NC}"
-echo "# Update image version"
-echo "kubectl set image deployment/bookservice bookservice=yourusername/bookservice:2.0.0 -n bookservice"
+echo "# Update config (triggers rolling restart)"
+echo "kubectl apply -f bookservice-configmap-v1.0.1.yaml"
+echo ""
+echo "# Or update image directly"
+echo "kubectl set image deployment/bookservice bookservice=wahba87/bookservice:1.0.0 -n bookservice"
 echo ""
 echo "# Check rollout status"
 echo "kubectl rollout status deployment/bookservice -n bookservice"
