@@ -24,7 +24,7 @@ spec:
     spec:
       containers:
         - name: bookservice
-          image: bookservice:1.0.0
+          image: wahba87/bookservice:1.0.0
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8080
