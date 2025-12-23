@@ -53,6 +53,12 @@ public class LoggingFilter implements Filter {
 
         chain.doFilter(request, response);
 
+        // Skip logging for health check endpoints (reduces noise from Docker/K8s probes)
+        String uri = httpRequest.getRequestURI();
+        if (uri.startsWith("/actuator/health")) {
+            return;
+        }
+
         long duration = System.currentTimeMillis() - startTime;
 
         String logEntry = String.format("%s | %s | %s %s | Status: %d | Duration: %dms | IP: %s",
@@ -64,7 +70,6 @@ public class LoggingFilter implements Filter {
                 duration,
                 httpRequest.getRemoteAddr());
 
-        log.info(logEntry);
         writeToLogFile(logEntry);
     }
 
