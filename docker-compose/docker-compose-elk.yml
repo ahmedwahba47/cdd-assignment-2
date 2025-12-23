@@ -23,6 +23,13 @@ services:
       retries: 5
       start_period: 30s
     restart: unless-stopped
+    mem_limit: 1g
+    memswap_limit: 1g
+    command: >
+      --innodb-flush-log-at-trx-commit=2
+      --innodb-flush-method=O_DIRECT
+      --innodb-buffer-pool-size=256M
+      --innodb-log-buffer-size=8M
 
   # Book Microservice
   bookservice:
@@ -55,6 +62,8 @@ services:
       retries: 3
       start_period: 60s
     restart: unless-stopped
+    mem_limit: 512m
+    memswap_limit: 512m
 
   # Elasticsearch
   elasticsearch:
@@ -64,6 +73,12 @@ services:
       - discovery.type=single-node
       - xpack.security.enabled=false
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      # I/O tuning to reduce disk pressure on network-attached storage
+      - indices.memory.index_buffer_size=10%
+      - index.translog.durability=async
+      - index.translog.sync_interval=30s
+      - index.refresh_interval=30s
+      - indices.store.throttle.max_bytes_per_sec=20mb
     ports:
       - "9200:9200"
       - "9300:9300"
@@ -78,6 +93,8 @@ services:
       retries: 5
       start_period: 60s
     restart: unless-stopped
+    mem_limit: 1536m
+    memswap_limit: 1536m
 
   # Logstash
   logstash:
@@ -97,6 +114,8 @@ services:
       elasticsearch:
         condition: service_healthy
     restart: unless-stopped
+    mem_limit: 512m
+    memswap_limit: 512m
 
   # Kibana
   kibana:
@@ -104,6 +123,7 @@ services:
     container_name: kibana
     environment:
       - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+      - NODE_OPTIONS=--max-old-space-size=512
     ports:
       - "5601:5601"
     networks:
@@ -118,6 +138,8 @@ services:
       retries: 5
       start_period: 90s
     restart: unless-stopped
+    mem_limit: 768m
+    memswap_limit: 768m
 
 networks:
   bookservice-network:
