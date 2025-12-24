@@ -293,6 +293,40 @@ else
     fail "docker-compose-elk.yml has invalid YAML syntax"
 fi
 
+# Test 14b: Port Security Check
+echo ""
+echo "--- Test 14b: Port Security Check ---"
+
+PUBLIC_IP="128.140.102.126"
+
+# Check Elasticsearch port 9200 is NOT publicly accessible
+if curl -s --connect-timeout 2 "http://${PUBLIC_IP}:9200" &>/dev/null; then
+    fail "SECURITY RISK: Elasticsearch port 9200 is publicly accessible!"
+else
+    pass "Elasticsearch port 9200 is not publicly accessible"
+fi
+
+# Check Elasticsearch port 9300 is NOT publicly accessible
+if curl -s --connect-timeout 2 "http://${PUBLIC_IP}:9300" &>/dev/null; then
+    fail "SECURITY RISK: Elasticsearch port 9300 is publicly accessible!"
+else
+    pass "Elasticsearch port 9300 is not publicly accessible"
+fi
+
+# Check Logstash port 5044 is NOT publicly accessible
+if curl -s --connect-timeout 2 "http://${PUBLIC_IP}:5044" &>/dev/null; then
+    fail "SECURITY RISK: Logstash port 5044 is publicly accessible!"
+else
+    pass "Logstash port 5044 is not publicly accessible"
+fi
+
+# Check Kibana is localhost-only (should fail from public IP)
+if curl -s --connect-timeout 2 "http://${PUBLIC_IP}:5601" &>/dev/null; then
+    warn "Kibana port 5601 is publicly accessible (consider SSH tunnel access only)"
+else
+    pass "Kibana port 5601 is not publicly accessible (localhost only)"
+fi
+
 # Test 15: Live Deployment Type Verification (if services are running)
 echo ""
 echo "--- Test 15: Live Deployment Type Verification ---"
