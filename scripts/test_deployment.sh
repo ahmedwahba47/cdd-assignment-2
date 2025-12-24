@@ -320,11 +320,11 @@ else
     pass "Logstash port 5044 is not publicly accessible"
 fi
 
-# Check Kibana is localhost-only (should fail from public IP)
+# Check Kibana standard port 5601 is NOT accessible (we use random port 47601)
 if curl -s --connect-timeout 2 "http://${PUBLIC_IP}:5601" &>/dev/null; then
-    warn "Kibana port 5601 is publicly accessible (consider SSH tunnel access only)"
+    fail "SECURITY RISK: Kibana on standard port 5601 is publicly accessible!"
 else
-    pass "Kibana port 5601 is not publicly accessible (localhost only)"
+    pass "Kibana standard port 5601 is not accessible (using random port instead)"
 fi
 
 # Test 15: Live Deployment Type Verification (if services are running)
