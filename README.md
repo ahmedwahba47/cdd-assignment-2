@@ -6,6 +6,8 @@
 **Module:** Container Design & Deployment
 **Date:** December 2025
 
+**Docker Hub:** [wahba87/bookservice](https://hub.docker.com/r/wahba87/bookservice)
+
 A Java Spring Boot microservice for managing books, demonstrating container orchestration with Docker Compose, Docker Swarm, and Kubernetes.
 
 ## Tech Stack
@@ -159,9 +161,10 @@ Each orchestration tool uses a different port:
 ```bash
 cd docker-compose
 docker compose -f docker-compose-elk.yml up -d
-# Kibana: http://localhost:5601
-# Elasticsearch: http://localhost:9200
+# Kibana: http://localhost:47601 (random port for security)
 ```
+
+> **Security Note:** Elasticsearch and Logstash ports are not exposed publicly. Only Kibana is accessible on a non-standard port to avoid automated scanners.
 
 ## Cleanup
 
